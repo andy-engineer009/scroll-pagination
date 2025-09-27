@@ -15,6 +15,50 @@ const cleanFilters = (filters: any) => {
   return cleaned;
 };
 
+// Applied Campaign Influencers API
+export const appliedInfluencersApi = {
+  // Fetch applied influencers for a campaign with page pagination
+  fetchAppliedInfluencers: async (page: number, limit: number = 10, campaignId: string) => {
+    try {
+      const payload = {
+        page,
+        limit,
+        campaign_id: campaignId
+      };
+      
+      const response = await api.post(API_ROUTES.appliedCampaingsInfluencerList, payload);
+
+      console.log('📡 Applied Influencers API Response:', response);
+
+      if (response.status === 1) {
+        const data = response.data?.rows || [];
+        const totalCount = response.data?.count || 0;
+        const totalPages = Math.ceil(totalCount / limit);
+        
+        return {
+          data,
+          hasMore: page < totalPages,
+          totalPages
+        };
+      } else {
+       
+        return {
+          data: [],
+          hasMore: false,
+          totalPages: 0
+        };
+      }
+    } catch (error) {
+      console.error('❌ Applied Influencers API Error:', error);
+      return {
+        data: [],
+        hasMore: false,
+        totalPages: 0
+      };
+    }
+  }
+};
+
 // Influencer API with page pagination
 export const influencerApi = {
   // Fetch influencers with page pagination
@@ -39,7 +83,7 @@ export const influencerApi = {
         
         return {
           data,
-          hasMore: page < totalPages - 1,
+          hasMore: page < totalPages,
           totalPages
         };
       } else {
@@ -80,7 +124,7 @@ export const campaignApi = {
         
         return {
           data,
-          hasMore: page < totalPages - 1,
+          hasMore: page < totalPages,
           totalPages
         };
       } else {
@@ -117,7 +161,7 @@ export const createInfiniteScrollApi = (endpoint: string) => {
           
           return {
             data,
-            hasMore: page < totalPages - 1,
+            hasMore: page < totalPages,
             totalPages
           };
         } else {

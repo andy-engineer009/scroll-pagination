@@ -187,7 +187,7 @@ export default function VirtualInfluencerList({ filters = {} }: VirtualInfluence
 
   // Save data when new data arrives with 500ms buffer
   useEffect(() => {
-    if (data && data.pages.length > 0 && data.pages.length > processedPagesRef.current) {
+    if (data && data.pages.length > 0) {
       const allInfluencers = data.pages.flatMap((page: any) => page.data);
       const currentPage = data.pages.length;
       
@@ -201,8 +201,8 @@ export default function VirtualInfluencerList({ filters = {} }: VirtualInfluence
           setIsFilterLoading(false);
           setShowSkeletons(false);
         }, 500);
-      } else {
-        // Normal data save (not filter change)
+      } else if (data.pages.length > processedPagesRef.current) {
+        // Normal data save (not filter change) - only if new pages
         dispatch(setData({ data: allInfluencers, lastPage: currentPage, filters: effectiveFilters }));
         processedPagesRef.current = currentPage;
       }
